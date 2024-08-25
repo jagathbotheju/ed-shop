@@ -22,7 +22,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { Card, CardContent, CardHeader } from "../ui/card";
-// import { registerUser } from "@/actions/authActions";
+import { useAction } from "next-safe-action/hooks";
+import { registerUser } from "@/server/actions/auth-actions";
+import FormSuccess from "./form-success";
+import FormError from "./form-error";
 
 const RegisterForm = () => {
   const router = useRouter();
@@ -39,25 +42,17 @@ const RegisterForm = () => {
     mode: "all",
   });
 
-  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
-    startTransition(() => {
-      // registerUser(values)
-      //   .then((res) => {
-      //     if (res.success) {
-      //       router.push("/auth/login");
-      //       router.refresh();
-      //       return toast.success(res.message);
-      //     } else {
-      //       return toast.error(res.error);
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     return toast.error(err.message);
-      //   })
-      //   .finally(() => {
-      //     form.reset();
-      //   });
-    });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const { isExecuting, execute } = useAction(registerUser, {
+    onSuccess: ({ data }) => {
+      if (data?.error) setError(data.error);
+      if (data?.success) setSuccess(data.success);
+    },
+  });
+
+  const onSubmit = (formData: z.infer<typeof RegisterSchema>) => {
+    execute(formData);
   };
 
   return (
@@ -168,10 +163,13 @@ const RegisterForm = () => {
               )}
             />
 
+            {success && <FormSuccess message={success} />}
+            {error && <FormError message={error} />}
+
             <div className="flex flex-col gap-3 items-center py-5">
               <Button
                 type="submit"
-                disabled={isPending || !form.formState.isValid}
+                disabled={!form.formState.isValid || isExecuting}
                 className="w-full"
               >
                 Register

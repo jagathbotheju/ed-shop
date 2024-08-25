@@ -11,7 +11,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useState, useTransition } from "react";
-
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -21,7 +20,10 @@ import { LoginSchema } from "@/lib/schema";
 import { Eye, EyeOff } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import Image from "next/image";
-import { socialSignIn } from "@/server/actions/auth-actions";
+import { emailSignIn, socialSignIn } from "@/server/actions/auth-actions";
+import { useAction } from "next-safe-action/hooks";
+import FormSuccess from "./form-success";
+import FormError from "./form-error";
 
 interface Props {
   callbackUrl?: string;
@@ -40,23 +42,26 @@ const LoginForm = ({ callbackUrl }: Props) => {
     mode: "all",
   });
 
+  const [error, setError] = useState("");
+  // const [success, setSuccess] = useState("");
+  const { isExecuting, execute } = useAction(emailSignIn, {
+    onSuccess: ({ data }) => {
+      if (data?.success) {
+        // setSuccess(data.success);
+        // setError("");
+        toast.success(data.success);
+        router.push("/");
+      }
+      if (data?.error) {
+        console.log(error);
+        setError(data.error);
+        // setSuccess("");
+      }
+    },
+  });
+
   const onSubmit = (formData: z.infer<typeof LoginSchema>) => {
-    startTransition(() => {
-      // loginCredentials(formData)
-      //   .then((res) => {
-      //     if (res.success) {
-      //       router.push(callbackUrl ? callbackUrl : "/");
-      //       router.refresh();
-      //       return toast.success(res.message);
-      //     } else {
-      //       return toast.error(res.error);
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log("LoginForm", err);
-      //     return toast.error("Invalid Credentials");
-      //   });
-    });
+    execute(formData);
   };
 
   return (
@@ -106,6 +111,10 @@ const LoginForm = ({ callbackUrl }: Props) => {
                         {...field}
                         type={showPass ? "text" : "password"}
                         className="dark:bg-slate-600"
+                        onChange={(value) => {
+                          setError("");
+                          field.onChange(value);
+                        }}
                       />
                       <span
                         className="absolute top-3 right-2 cursor-pointer"
@@ -120,19 +129,22 @@ const LoginForm = ({ callbackUrl }: Props) => {
               )}
             />
 
+            {error && <FormError message={error} />}
+
             {/* submit button */}
             <Button
               type="submit"
               className="w-full"
-              disabled={!form.formState.isValid}
+              disabled={!form.formState.isValid || isExecuting}
             >
               Log In
             </Button>
           </form>
 
+          {/* reset password */}
           <div className="flex flex-col items-center">
             <Link
-              href="/auth/forgot-password"
+              href="/auth/reset-password"
               className="text-xs self-end cursor-pointer hover:text-primary mt-2"
             >
               forgot password?
@@ -144,7 +156,7 @@ const LoginForm = ({ callbackUrl }: Props) => {
       <CardFooter className="flex flex-col">
         <div className="flex items-center gap-x-5 mb-4">
           <div className="flex bg-slate-200 w-20 h-[0.5px]" />
-          <span className="text-center text-xs">or signin with</span>
+          <span className="text-center text-xs">or sign in with</span>
           <div className="flex bg-slate-200 w-20 h-[0.5px]" />
         </div>
         {/* google login */}
