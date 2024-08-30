@@ -1,5 +1,24 @@
 import { z } from "zod";
 
+export const UserProfileSchema = z
+  .object({
+    name: z.string(),
+    image: z.string().optional(),
+    isTwoFactorEnabled: z.boolean().optional(),
+    password: z
+      .string()
+      .min(6, "password must be at least 6 characters")
+      .optional(),
+    confirmPassword: z
+      .string()
+      .min(6, "password must be at least 6 characters")
+      .optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password does not match",
+    path: ["confirmPassword"],
+  });
+
 export const ResetPasswordSchema = z.object({
   email: z
     .string()
@@ -35,7 +54,7 @@ export const LoginSchema = z.object({
     .refine((pw) => pw.length > 6, {
       message: "at least 6 characters required",
     }),
-  code: z.string().optional(),
+  otp: z.string().optional(),
 });
 
 export const RegisterSchema = z

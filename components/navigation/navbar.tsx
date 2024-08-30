@@ -1,5 +1,5 @@
 import { User } from "@/server/db/schema/user";
-import AuthButton from "../auth-button";
+import AuthButton from "../auth/auth-button";
 import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
@@ -7,8 +7,6 @@ import { auth } from "@/lib/auth";
 const Navbar = async () => {
   const session = await auth();
   const user = session?.user as User;
-
-  console.log("user navbar", user);
 
   return (
     <header className="container mx-auto max-w-7xl py-8">

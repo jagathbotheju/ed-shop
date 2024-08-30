@@ -27,3 +27,15 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
   if (error) return console.log(error);
   if (data) return data;
 };
+
+export const sendTwoFactorTokenByEmail = async (
+  email: string,
+  token: string
+) => {
+  const { data, error } = await resend.emails.send({
+    from: "onboarding@resend.dev",
+    to: email,
+    subject: "Your two factor login token",
+    html: `<p>Click to <a href=${token}>Reset your password</a>${token}</p>`,
+  });
+};

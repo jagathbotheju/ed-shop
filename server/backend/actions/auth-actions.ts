@@ -11,12 +11,22 @@ import bcrypt from "bcryptjs";
 import {
   generateEmailVerificationToken,
   generatePasswordResetToken,
+  generateTwoFactorToken,
   getPasswordResetTokenByToken,
 } from "./token-actions";
-import { sendPasswordResetEmail, sendVerificationEmail } from "./email-actions";
+import {
+  sendPasswordResetEmail,
+  sendTwoFactorTokenByEmail,
+  sendVerificationEmail,
+} from "./email-actions";
 import { AuthError } from "next-auth";
-import { db } from "../db";
-import { emailToken, passwordResetToken, user } from "../db/schema";
+import { db } from "../../db";
+import {
+  emailToken,
+  passwordResetToken,
+  twoFactorToken,
+  user,
+} from "../../db/schema";
 import { signIn } from "@/lib/auth";
 
 const actionClient = createSafeActionClient();
@@ -61,7 +71,7 @@ export const newPassword = actionClient
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const deletedUer = await db
+      const updatedUer = await db
         .update(user)
         .set({
           password: hashedPassword,
@@ -74,7 +84,19 @@ export const newPassword = actionClient
         .where(eq(passwordResetToken.id, existingToken.id))
         .returning();
 
-      if (deletedUer && deletedToken) {
+      // await db.transaction(async (tx)=>{
+      //   await db
+      //     .update(user)
+      //     .set({
+      //       password: hashedPassword,
+      //     })
+      //     .where(eq(user.id, existingUser.id));
+      //   await db
+      //     .delete(passwordResetToken)
+      //     .where(eq(passwordResetToken.id, existingToken.id));
+      // })
+
+      if (updatedUer && deletedToken) {
         return { success: "Password updated successfully, please Login" };
       }
 
@@ -130,14 +152,15 @@ export const registerUser = actionClient
 /***************EMAIL SIGN IN ***********************************************/
 export const emailSignIn = actionClient
   .schema(LoginSchema)
-  .action(async ({ parsedInput: { email, password, code } }) => {
+  .action(async ({ parsedInput: { email, password, otp } }) => {
     try {
       const existingUser = await db.query.user.findFirst({
         where: eq(user.email, email),
       });
+      if (!existingUser) return { error: "Invalid Credentials" };
 
       if (existingUser?.email !== email) {
-        return { error: "Email not found!" };
+        return { error: "User not found, please register" };
       }
 
       if (!existingUser.emailVerified) {
@@ -151,14 +174,35 @@ export const emailSignIn = actionClient
         };
       }
 
-      console.log("login email", email);
-      console.log("login password", password);
+      if (existingUser.twoFactorEnabled) {
+        if (otp) {
+          const existTwoFactorToken = await db.query.twoFactorToken.findFirst({
+            where: eq(twoFactorToken.email, existingUser.email),
+          });
+          if (!existTwoFactorToken) return { error: "Invalid Token" };
+          if (existTwoFactorToken.token !== otp)
+            return { error: "Invalid Token" };
+          const hasExpired = new Date(existTwoFactorToken.expires) < new Date();
+          if (hasExpired) return { error: "OTP expired" };
+
+          await db
+            .delete(twoFactorToken)
+            .where(eq(twoFactorToken.id, existTwoFactorToken.id));
+        } else {
+          const token = await generateTwoFactorToken(existingUser.email);
+          if (!token)
+            return { error: "Token generate error, please try again" };
+
+          await sendTwoFactorTokenByEmail(existingUser.email, token[0].token);
+          return { twoFactor: "OTP sent to your email address" };
+        }
+      }
+
       await signIn("credentials", {
         email,
         password,
         redirect: false,
       });
-
       return { success: "Successfully LoggedIn" };
     } catch (error) {
       console.log(error);

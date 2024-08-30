@@ -1,6 +1,6 @@
 "use client";
 
-import { verifyEmailToken } from "@/server/actions/token-actions";
+import { verifyEmailToken } from "@/server/backend/actions/token-actions";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";

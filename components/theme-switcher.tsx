@@ -2,10 +2,11 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
+import { Switch } from "./ui/switch";
 
 export function ThemeSwitcher() {
   const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
@@ -14,21 +15,19 @@ export function ThemeSwitcher() {
   if (!mounted) return null;
 
   return (
-    <div>
-      {theme === "dark" ? (
-        <Sun
-          onClick={() => {
-            console.log("light theme");
-            setTheme("light");
-          }}
-          className="cursor-pointer text-foreground mr-2 w-4 group-hover:rotate-180 transition-all duration-300 ease-in-out"
-        />
-      ) : (
-        <Moon
-          onClick={() => setTheme("dark")}
-          className="cursor-pointer mr-2 w-4 group-hover:rotate-180 transition-all duration-300 ease-in-out"
-        />
-      )}
+    <div className="flex w-full justify-between items-center">
+      <div className="flex group items-center">
+        {theme === "dark" && (
+          <Sun className="group-hover:text-yellow-600 cursor-pointer text-foreground mr-1 w-5 group-hover:rotate-180 transition-all duration-300 ease-in-out" />
+        )}
+        {theme === "light" && (
+          <Moon className="group-hover:text-blue-400 cursor-pointer text-foreground mr-1 w-5 group-hover:rotate-180 transition-all duration-300 ease-in-out" />
+        )}
+        <span className="dark:text-blue-400 text-secondary-foreground/75 text-yellow-600">
+          Theme {theme?.toLocaleUpperCase()}
+        </span>
+      </div>
+      <Switch checked={theme === "dark"} />
     </div>
   );
 }

@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader } from "../ui/card";
 import { Input } from "../ui/input";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
-import { newPassword } from "@/server/actions/auth-actions";
+import { newPassword } from "@/server/backend/actions/auth-actions";
 import { useAction } from "next-safe-action/hooks";
 import FormError from "./form-error";
 import FormSuccess from "./form-success";

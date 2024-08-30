@@ -9,7 +9,7 @@ import { db } from "@/server/db";
 import { LoginSchema } from "./schema";
 import { user as userDB } from "@/server/db/schema";
 import { compare } from "bcryptjs";
-import { User } from "@/server/db/schema/user";
+import { user, User } from "@/server/db/schema/user";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: DrizzleAdapter(db),
@@ -62,13 +62,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (tokenUser) {
         session.user = tokenUser;
       }
+      if (token.isOAuth) {
+        console.log("auth session*****", token.isOAuth);
+        session.isOAuth = token.isOAuth as boolean;
+      }
+      console.log("session isOAuth", session.isOAuth);
       return session;
     },
-    async jwt({ token, user, trigger, session }) {
-      if (user) {
-        token.user = user;
+    async jwt({ token, user: jwtUser, trigger, session, account }) {
+      token.isOAuth = false;
+      if (token && token.sub) {
+        const userDB = await db.query.user.findFirst({
+          where: eq(user.id, token.sub),
+        });
+        token.user = userDB;
       }
-
+      if (account) {
+        token.isOAuth = true;
+      }
       return token;
     },
   },
