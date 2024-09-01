@@ -13,11 +13,11 @@ interface Props {
 const DashboardNav = ({ user }: Props) => {
   const pathname = usePathname();
   const userLinks = [
-    { label: "Orders", path: "/dashboard/orders", icon: <Truck size={16} /> },
+    { label: "Orders", path: "/dashboard/orders", icon: <Truck size={22} /> },
     {
       label: "Settings",
       path: "/dashboard/settings",
-      icon: <Settings size={16} />,
+      icon: <Settings size={22} />,
     },
   ] as const;
 
@@ -27,17 +27,17 @@ const DashboardNav = ({ user }: Props) => {
           {
             label: "Analytics",
             path: "/dashboard/analytics",
-            icon: <BarChart size={16} />,
+            icon: <BarChart size={22} />,
           },
           {
             label: "Create",
             path: "/dashboard/add-product",
-            icon: <PenSquare size={16} />,
+            icon: <PenSquare size={22} />,
           },
           {
             label: "Products",
             path: "/dashboard/products",
-            icon: <Package size={16} />,
+            icon: <Package size={22} />,
           },
         ] as const)
       : [];
@@ -45,7 +45,7 @@ const DashboardNav = ({ user }: Props) => {
   const links = [...adminLinks, ...userLinks];
 
   return (
-    <nav className="py-2 overflow-auto">
+    <nav className="py-6 overflow-auto">
       <ul className="flex gap-6 font-semibold text-xs">
         <AnimatePresence>
           {links.map((link) => (

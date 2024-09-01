@@ -1,5 +1,19 @@
 import { z } from "zod";
 
+export const ProductSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().min(1, "title is required"),
+  description: z
+    .string({ required_error: "description is required" })
+    .min(1, "description is required"),
+  price: z.coerce
+    .number({
+      required_error: "price is required",
+      invalid_type_error: "price must be a number",
+    })
+    .positive({ message: "must be a positive value" }),
+});
+
 export const UserProfileSchema = z
   .object({
     name: z.string(),
