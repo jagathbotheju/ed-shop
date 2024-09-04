@@ -52,11 +52,13 @@ const LoginForm = ({ callbackUrl }: Props) => {
   const { isExecuting, execute } = useAction(emailSignIn, {
     onSuccess: ({ data }) => {
       if (data?.success) {
+        setError("");
         toast.success(data.success);
         router.push("/");
       }
       if (data?.error) {
         setError(data.error);
+        setSuccess("");
       }
       if (data?.twoFactor) {
         setShowTwoFactor(true);
@@ -72,7 +74,7 @@ const LoginForm = ({ callbackUrl }: Props) => {
   };
 
   return (
-    <div className="flex items-center justify-center flex-col w-[50%]">
+    <div className="flex items-center justify-center flex-col w-full">
       <Card className="w-full md:w-[400px]">
         <CardHeader>
           <h1 className="mb-10 text-center bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-3xl font-bold text-transparent">
@@ -83,7 +85,7 @@ const LoginForm = ({ callbackUrl }: Props) => {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6 flex flex-col"
+              className="space-y-6 flex flex-col items-center"
               noValidate
             >
               {showTwoFactor ? (
@@ -97,7 +99,7 @@ const LoginForm = ({ callbackUrl }: Props) => {
                       </FormLabel>
                       <FormControl>
                         <InputOTP disabled={isPending} {...field} maxLength={6}>
-                          <InputOTPGroup>
+                          <InputOTPGroup className="flex w-full justify-self-center">
                             <InputOTPSlot index={0} />
                             <InputOTPSlot index={1} />
                             <InputOTPSlot index={2} />

@@ -1,15 +1,47 @@
 "use server";
 import { ProductSchema } from "@/lib/schema";
 import { db } from "@/server/db";
-import { products } from "@/server/db/schema/products";
+import { Product, products } from "@/server/db/schema/products";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+
+export const deleteProduct = async (productId: string) => {
+  try {
+    const deletedProduct = await db
+      .delete(products)
+      .where(eq(products.id, productId));
+    if (deletedProduct) {
+      return { success: "Product deleted successfully" };
+    }
+  } catch (error) {
+    return { error: "Could not delete product" };
+  }
+};
+
+export const getProducts = async () => {
+  const products = await db.query.products.findMany({
+    orderBy: (products, { desc }) => [desc(products.createdAt)],
+  });
+  return products as Product[];
+};
+
+export const getProductById = async (productId: string) => {
+  const product = await db.query.products.findFirst({
+    where: eq(products.id, productId),
+  });
+  if (product) return product as Product;
+  return null;
+};
 
 export const upsertProduct = async (
   formData: z.infer<typeof ProductSchema>
 ) => {
   try {
     const { id, title, description, price } = formData;
+    console.log("id", id);
+    console.log("title", title);
+    console.log("description", description);
+    console.log("price", price);
     if (id) {
       const currentProduct = await db.query.products.findFirst({
         where: eq(products.id, id),

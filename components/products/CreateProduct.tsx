@@ -24,11 +24,18 @@ import { Textarea } from "../ui/textarea";
 import { DollarSign, Loader2 } from "lucide-react";
 import Tiptap from "../Tiptap";
 import { useUpsertProduct } from "@/server/backend/mutations/productMutations";
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Product } from "@/server/db/schema/products";
+import { useProductById } from "@/server/backend/queries/productQueries";
 
-const CreateProduct = ({ productId }: { productId?: string }) => {
+interface Props {
+  productId?: string;
+}
+
+const CreateProduct = ({ productId }: Props) => {
   const router = useRouter();
+  const { data: product } = useProductById(productId ?? "");
   const [isPending, startTransition] = useTransition();
   const form = useForm<z.infer<typeof ProductSchema>>({
     resolver: zodResolver(ProductSchema),
@@ -40,20 +47,32 @@ const CreateProduct = ({ productId }: { productId?: string }) => {
     mode: "all",
   });
 
+  useEffect(() => {
+    if (productId && product) {
+      form.setValue("title", product.title);
+      form.setValue("description", product.description);
+      form.setValue("price", product.price);
+    }
+  }, [product, form, productId]);
+
   const { mutate, error, isSuccess } = useUpsertProduct();
 
   const onSubmit = (formData: z.infer<typeof ProductSchema>) => {
     console.log(formData);
     startTransition(() => {
-      mutate(formData);
+      mutate({
+        id: product && product.id ? product.id : "",
+        ...formData,
+      });
     });
+    console.log("CreateProduct resetting form");
     form.reset();
   };
 
   return (
-    <Card className="mt-8 w-full md:w-[60%]">
+    <Card className="w-full md:w-[60%]">
       <CardHeader>
-        <CardTitle>Create Product</CardTitle>
+        <CardTitle>{productId ? "Update" : "Create"} Product</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -117,19 +136,25 @@ const CreateProduct = ({ productId }: { productId?: string }) => {
               )}
             />
 
-            <Button
-              disabled={isPending || !form.formState.isValid}
-              type="submit"
-            >
-              {isPending && <Loader2 className="animate-spin mr-2" />}
-              {productId
-                ? isPending
-                  ? "Updating..."
-                  : "Update Product"
-                : isPending
-                ? "Creating..."
-                : "Create Product"}
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                disabled={isPending || !form.formState.isValid}
+                type="submit"
+              >
+                {isPending && <Loader2 className="animate-spin mr-2" />}
+                {productId
+                  ? isPending
+                    ? "Updating..."
+                    : "Update Product"
+                  : isPending
+                  ? "Creating..."
+                  : "Create Product"}
+              </Button>
+
+              <Button variant="secondary" onClick={() => router.back()}>
+                Cancel
+              </Button>
+            </div>
           </form>
         </Form>
       </CardContent>
