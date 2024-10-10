@@ -1,6 +1,43 @@
 import { z } from "zod";
 
+export const VariantSchema = z.object({
+  type: z
+    .string({ required_error: "type is required" })
+    .min(3, "must be at least 3 characters"),
+  color: z.string().min(3, "must be at least 3 characters"),
+  // tags: z
+  //   .array(
+  //     z.string().min(3, "You must provide at least 3 characters")
+  //     // .refine((data) => data.length > 3, {
+  //     //   message: "You must provide at least 3 characters",
+  //     //   path: ["tags"],
+  //     // })
+  //   )
+  //   .min(1, "You must provide at least one tag"),
+  // .min(3, "You must provide at least 3 characters")
+  tags: z
+    .string()
+    .min(1, "must provide at least 3 characters")
+    .array()
+    .min(1, "must provide at least one tag"),
+  // images: z.string().array().min(1, "at least one image is required"),
+  images: z
+    .array(
+      z.object({
+        url: z.string().refine((url) => url.search("blob:") !== 0, {
+          message: "Please wait for the image to upload",
+        }),
+        size: z.number(),
+        key: z.string().optional(),
+        id: z.number().optional(),
+        name: z.string(),
+      })
+    )
+    .min(1, { message: "You must provide at least one image" }),
+});
+
 export const ProductSchema = z.object({
+  //product schema
   id: z.string().optional(),
   title: z.string().min(1, "title is required"),
   description: z
@@ -12,7 +49,17 @@ export const ProductSchema = z.object({
       invalid_type_error: "price must be a number",
     })
     .positive({ message: "must be a positive value" }),
+
+  // //variant schema
+  // type: z
+  //   .string({ required_error: "type is required" })
+  //   .min(3, "must be at least 3 characters"),
+  // color: z.string().min(3, "must be at least 3 characters"),
+  // tags: z.array(z.string()).min(1, "You must provide at least one tag"),
+  // images: z.array(z.string().min(1, "variant image is required")),
 });
+
+// export const ProductVariantSchema = ProductSchema.merge(VariantSchema);
 
 export const UserProfileSchema = z
   .object({

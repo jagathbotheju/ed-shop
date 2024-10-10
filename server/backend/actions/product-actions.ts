@@ -1,7 +1,8 @@
 "use server";
 import { ProductSchema } from "@/lib/schema";
 import { db } from "@/server/db";
-import { Product, products } from "@/server/db/schema/products";
+import { productVariants } from "@/server/db/schema";
+import { Product, ProductExt, products } from "@/server/db/schema/products";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
@@ -20,9 +21,17 @@ export const deleteProduct = async (productId: string) => {
 
 export const getProducts = async () => {
   const products = await db.query.products.findMany({
+    with: {
+      productVariants: {
+        with: {
+          variantImages: true,
+          variantTags: true,
+        },
+      },
+    },
     orderBy: (products, { desc }) => [desc(products.createdAt)],
   });
-  return products as Product[];
+  return products as ProductExt[];
 };
 
 export const getProductById = async (productId: string) => {

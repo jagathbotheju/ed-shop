@@ -22,7 +22,7 @@ const DashboardNav = ({ user }: Props) => {
   ] as const;
 
   const adminLinks =
-    user.role === "admin"
+    user?.role === "admin"
       ? ([
           {
             label: "Analytics",

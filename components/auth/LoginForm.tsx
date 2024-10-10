@@ -51,6 +51,7 @@ const LoginForm = ({ callbackUrl }: Props) => {
   const [success, setSuccess] = useState("");
   const { isExecuting, execute } = useAction(emailSignIn, {
     onSuccess: ({ data }) => {
+      console.log("response", data);
       if (data?.success) {
         setError("");
         toast.success(data.success);
@@ -81,11 +82,11 @@ const LoginForm = ({ callbackUrl }: Props) => {
             Log In
           </h1>
         </CardHeader>
-        <CardContent>
+        <CardContent className="w-full">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6 flex flex-col items-center"
+              className="space-y-6 flex flex-col w-full"
               noValidate
             >
               {showTwoFactor ? (
@@ -98,7 +99,12 @@ const LoginForm = ({ callbackUrl }: Props) => {
                         We&apos;ve sent you a two factor code to your email.
                       </FormLabel>
                       <FormControl>
-                        <InputOTP disabled={isPending} {...field} maxLength={6}>
+                        <InputOTP
+                          disabled={isPending}
+                          {...field}
+                          maxLength={6}
+                          className="self-center"
+                        >
                           <InputOTPGroup className="flex w-full justify-self-center">
                             <InputOTPSlot index={0} />
                             <InputOTPSlot index={1} />
@@ -128,7 +134,7 @@ const LoginForm = ({ callbackUrl }: Props) => {
                             disabled={isPending}
                             placeholder="your.email@example.com"
                             type="email"
-                            className="dark:bg-slate-600"
+                            className="dark:bg-slate-600 w-full"
                           />
                         </FormControl>
                         <FormMessage />

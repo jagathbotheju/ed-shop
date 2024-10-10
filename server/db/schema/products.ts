@@ -1,5 +1,6 @@
-import { InferSelectModel } from "drizzle-orm";
+import { InferSelectModel, relations } from "drizzle-orm";
 import { pgTable, real, text, timestamp } from "drizzle-orm/pg-core";
+import { ProductVariantExt, productVariants } from "./productVariants";
 
 export const products = pgTable("products", {
   id: text("id")
@@ -13,3 +14,10 @@ export const products = pgTable("products", {
 });
 
 export type Product = InferSelectModel<typeof products>;
+export type ProductExt = InferSelectModel<typeof products> & {
+  productVariants: ProductVariantExt[];
+};
+
+export const productRelations = relations(products, ({ many }) => ({
+  productVariants: many(productVariants),
+}));

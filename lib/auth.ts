@@ -7,9 +7,11 @@ import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { db } from "@/server/db";
 import { LoginSchema } from "./schema";
-import { user as userDB } from "@/server/db/schema";
+import { twoFactorToken, user as userDB } from "@/server/db/schema";
 import { compare } from "bcryptjs";
 import { user, User } from "@/server/db/schema/user";
+import { generateTwoFactorToken } from "@/server/backend/actions/token-actions";
+import { sendTwoFactorTokenByEmail } from "@/server/backend/actions/email-actions";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: DrizzleAdapter(db),
@@ -37,11 +39,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!validated.success) return null;
 
         const { email, password } = validated.data;
-        console.log("credentials email*****", email);
-        console.log("credentials password*****", password);
         const existUser = await db.query.user.findFirst({
           where: eq(userDB.email, email),
         });
+
+        if (existUser?.email !== email) return null;
 
         if (!existUser || !existUser.password) return null;
         const matchPassword = await compare(password, existUser.password);

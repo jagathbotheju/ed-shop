@@ -28,6 +28,7 @@ import {
   user,
 } from "../../db/schema";
 import { signIn } from "@/lib/auth";
+import { compare } from "bcryptjs";
 
 const actionClient = createSafeActionClient();
 
@@ -175,6 +176,10 @@ export const emailSignIn = actionClient
       }
 
       if (existingUser.twoFactorEnabled) {
+        if (!existingUser.password) return { error: "Invalid Credentials" };
+        const matchPassword = await compare(password, existingUser.password);
+        if (!matchPassword) return { error: "Invalid Credentials" };
+
         if (otp) {
           const existTwoFactorToken = await db.query.twoFactorToken.findFirst({
             where: eq(twoFactorToken.email, existingUser.email),
@@ -198,14 +203,14 @@ export const emailSignIn = actionClient
         }
       }
 
+      console.log("passing otp******", otp);
       await signIn("credentials", {
         email,
         password,
         redirect: false,
       });
       return { success: "Successfully LoggedIn" };
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
       return { error: "Invalid Credentials" };
     }
   });

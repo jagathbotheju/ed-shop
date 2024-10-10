@@ -30,7 +30,7 @@ export const useUpsertProduct = () => {
       upsertProduct(formData),
     onSuccess: (res) => {
       const message = res?.success;
-      toast.success(message);
+      toast.success(message, { id: "create-product" });
       router.push("/dashboard/products");
     },
     onError: (res) => {
