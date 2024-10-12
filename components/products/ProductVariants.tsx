@@ -32,8 +32,13 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import VariantImages from "./VariantImages";
 import { ProductVariantExt } from "@/server/db/schema/productVariants";
-import { useUpsertProductVariant } from "@/server/backend/mutations/variantMutations";
+import {
+  useDeleteVariant,
+  useUpsertProductVariant,
+} from "@/server/backend/mutations/variantMutations";
 import _ from "lodash";
+import { deleteFiles } from "@/server/backend/actions/uploadActions";
+import VariantDeleteDialog from "./VariantDeleteDialog";
 
 interface Props {
   editMode: boolean;
@@ -50,6 +55,7 @@ const ProductVariants = ({
   id,
   editMode = false,
 }: Props) => {
+  const { mutate: deleteVariantMutate } = useDeleteVariant();
   const { mutate } = useUpsertProductVariant();
   const [open, setOpen] = useState(false);
   const form = useForm<z.infer<typeof VariantSchema>>({
@@ -64,9 +70,7 @@ const ProductVariants = ({
   });
 
   useEffect(() => {
-    // console.log("product variants", variant);
     if (variant && editMode) {
-      // variant.variantTags.map((item) => item.tag);
       form.setValue("type", variant.productType);
       form.setValue("color", variant.color);
       form.setValue(
@@ -79,10 +83,11 @@ const ProductVariants = ({
           name: img.name,
           size: img.size,
           url: img.url,
+          key: img.key,
         }))
       );
     }
-  }, []);
+  }, [editMode, form, variant]);
 
   const onSubmit = (variantData: z.infer<typeof VariantSchema>) => {
     mutate({
@@ -92,6 +97,16 @@ const ProductVariants = ({
       editMode,
     });
     setOpen(false);
+  };
+
+  const deleteVariant = () => {
+    if (variant && variant.id) {
+      deleteVariantMutate(variant.id);
+      variant.variantImages.forEach((image) => {
+        deleteFiles(image.key);
+      });
+      form.reset();
+    }
   };
 
   return (
@@ -177,13 +192,13 @@ const ProductVariants = ({
 
             <div className="mt-8 flex gap-2">
               <Button type="submit">{editMode ? "Update" : "Create"}</Button>
-              <Button
-                disabled={form.formState.isValid}
-                type="button"
-                variant="destructive"
-              >
-                Delete
-              </Button>
+
+              <VariantDeleteDialog deleteVariant={deleteVariant}>
+                <Button type="button" variant="destructive">
+                  Delete
+                </Button>
+              </VariantDeleteDialog>
+
               <Button
                 type="button"
                 variant="outline"

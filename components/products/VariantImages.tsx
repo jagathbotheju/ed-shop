@@ -57,6 +57,7 @@ const VariantImages = () => {
                     });
                   }}
                   onClientUploadComplete={(files) => {
+                    console.log("upload complete", files);
                     const images = getValues("images");
                     images.map((field, imageIndex) => {
                       if (field.url.search("blob:") === 0) {
@@ -81,6 +82,7 @@ const VariantImages = () => {
                         name: file.name,
                         size: file.size,
                         url: URL.createObjectURL(file),
+                        key: "",
                       })
                     );
                     return files;

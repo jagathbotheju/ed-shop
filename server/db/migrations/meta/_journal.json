@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1724502462670,
-      "tag": "0000_safe_malcolm_colcord",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1724989809739,
-      "tag": "0001_lumpy_hex",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1724989817990,
-      "tag": "0002_curved_tinkerer",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1725167226366,
-      "tag": "0003_lowly_shinobi_shaw",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1725900143743,
-      "tag": "0004_third_misty_knight",
+      "when": 1728712011503,
+      "tag": "0000_far_sunset_bain",
       "breakpoints": true
     }
   ]

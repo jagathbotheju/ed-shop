@@ -13,6 +13,7 @@ export const variantImages = pgTable("variant_images", {
   url: text("url").notNull(),
   size: real("size").notNull(),
   name: text("name").notNull(),
+  key: text("key").notNull(),
   order: text("order").notNull(),
   createdAt: timestamp("created_at", { mode: "string" }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { mode: "string" }).notNull().defaultNow(),

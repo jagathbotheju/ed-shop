@@ -10,6 +10,14 @@ import {
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
+export const deleteVariant = async (variantId: string) => {
+  const deletedVariant = await db
+    .delete(productVariants)
+    .where(eq(productVariants.id, variantId));
+  if (deletedVariant) return { success: "Variant deleted successfully" };
+  return { success: "Could not delete Variant" };
+};
+
 export const upsertVariant = async ({
   variantData,
   id,
@@ -50,6 +58,7 @@ export const upsertVariant = async ({
           name: image.name,
           size: image.size,
           url: image.url,
+          key: image.key,
           order: index.toString(),
           variantId: editVariant[0].id,
         }))
@@ -85,6 +94,7 @@ export const upsertVariant = async ({
           size: image.size,
           url: image.url,
           order: index.toString(),
+          key: image.key,
           variantId: newVariant[0].id,
         }))
       );
