@@ -191,10 +191,16 @@ const ProductVariants = ({
             <VariantImages />
 
             <div className="mt-8 flex gap-2">
-              <Button type="submit">{editMode ? "Update" : "Create"}</Button>
+              <Button type="submit" disabled={!form.formState.isValid}>
+                {editMode ? "Update" : "Create"}
+              </Button>
 
               <VariantDeleteDialog deleteVariant={deleteVariant}>
-                <Button type="button" variant="destructive">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  disabled={!form.formState.isValid}
+                >
                   Delete
                 </Button>
               </VariantDeleteDialog>
