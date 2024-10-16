@@ -19,7 +19,7 @@ export const productVariants = pgTable("product_variants", {
 
 export type ProductVariant = InferSelectModel<typeof productVariants>;
 export type ProductVariantExt = InferSelectModel<typeof productVariants> & {
-  // product: Product;
+  products: Product;
   variantImages: VariantImage[];
   variantTags: VariantTag[];
 };

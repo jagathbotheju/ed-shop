@@ -10,11 +10,23 @@ import {
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { algoliasearch } from "algoliasearch";
+import { ProductVariantExt } from "@/server/db/schema/productVariants";
 
 const algoliaClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_ID as string,
   process.env.ALGOLIA_ADMIN as string
 );
+
+export const getVariants = async () => {
+  const variants = await db.query.productVariants.findMany({
+    with: {
+      products: true,
+      variantImages: true,
+      variantTags: true,
+    },
+  });
+  return variants as ProductVariantExt[];
+};
 
 export const deleteVariant = async (variantId: string) => {
   const deletedVariant = await db

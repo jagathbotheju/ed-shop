@@ -97,6 +97,7 @@ const ProductVariants = ({
       editMode,
     });
     setOpen(false);
+    form.reset();
   };
 
   const deleteVariant = () => {

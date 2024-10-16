@@ -26,6 +26,9 @@ export const getProducts = async () => {
         with: {
           variantImages: true,
           variantTags: true,
+          products: {
+            columns: { price: true, id: true },
+          },
         },
       },
     },

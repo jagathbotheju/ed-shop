@@ -1,4 +1,6 @@
+import HomeProducts from "@/components/products/HomeProducts";
+
 const DashboardPage = () => {
-  return <div>DashboardPage</div>;
+  return <div>Dashboard Page</div>;
 };
 export default DashboardPage;
