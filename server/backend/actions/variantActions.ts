@@ -28,6 +28,18 @@ export const getVariants = async () => {
   return variants as ProductVariantExt[];
 };
 
+export const getVariantsById = async (variantId: string) => {
+  const variant = await db.query.productVariants.findFirst({
+    where: eq(productVariants.id, variantId),
+    with: {
+      products: true,
+      variantImages: true,
+      variantTags: true,
+    },
+  });
+  return variant as ProductVariantExt;
+};
+
 export const deleteVariant = async (variantId: string) => {
   const deletedVariant = await db
     .delete(productVariants)

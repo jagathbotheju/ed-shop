@@ -164,7 +164,11 @@ const CreateProduct = ({ productId }: Props) => {
                 : "Create Product"}
             </Button>
 
-            <Button variant="secondary" onClick={() => router.back()}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => router.back()}
+            >
               Cancel
             </Button>
           </div>

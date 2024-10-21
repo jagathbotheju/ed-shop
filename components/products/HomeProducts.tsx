@@ -10,10 +10,8 @@ import { formatCurrency } from "@/lib/utils";
 import { Card, CardContent } from "../ui/card";
 
 const HomeProducts = () => {
-  // const { data: products, isPending, isFetching } = useProducts();
-  const { data: variants, isPending, isFetching } = useVariants();
-
-  console.log("variants", variants);
+  const { data: products, isPending, isFetching } = useProducts();
+  // const { data: variants, isPending, isFetching } = useVariants();
 
   if (isPending || isFetching) {
     return (
@@ -23,7 +21,7 @@ const HomeProducts = () => {
     );
   }
 
-  if (_.isEmpty(variants) || !variants) {
+  if (_.isEmpty(products) || !products) {
     return (
       <div className="flex w-full justify-center">
         <h3 className="text-3xl font-semibold text-clip p-10 rounded-md">
@@ -35,16 +33,16 @@ const HomeProducts = () => {
 
   return (
     <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      {variants.map((variant) => (
-        <Link href={`/products/${variant.id}`} key={variant.id}>
+      {products.map((product) => (
+        <Link href={`/products/${product.id}`} key={product.id}>
           <Card className="hover:shadow-lg hover:scale-105 transition-all duration-300">
             <CardContent className="flex flex-col h-[300px] relative p-1">
               <div className="">
                 <Image
-                  src={variant.variantImages[0].url}
+                  src={product.productVariants[0].variantImages[0].url}
                   height={100}
                   width={220}
-                  alt={variant.products.title}
+                  alt={product.title}
                   loading="lazy"
                   className="rounded-md"
                 />
@@ -52,14 +50,12 @@ const HomeProducts = () => {
 
               <div className="flex justify-between mt-4 p-2 absolute bottom-1 left-1 right-1">
                 <div className="font-medium">
-                  <h2>{variant.products.title}</h2>
+                  <h2>{product.title}</h2>
                   <p className="text-sm text-muted-foreground line-clamp-1">
-                    {variant.productType}
+                    {product.productVariants[0].productType}
                   </p>
                 </div>
-                <p className="text-sm p-1">
-                  {formatCurrency(variant.products.price)}
-                </p>
+                <p className="text-sm p-1">{formatCurrency(product.price)}</p>
               </div>
             </CardContent>
           </Card>

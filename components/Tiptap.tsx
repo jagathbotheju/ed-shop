@@ -28,7 +28,7 @@ const Tiptap = ({ value }: { value: string }) => {
     onUpdate: ({ editor }) => {
       //if you want to extract html only, without JS
       //can you sanitize-html npm package
-      const content = editor.getText();
+      const content = editor.getHTML();
       setValue("description", content, {
         shouldValidate: true,
         shouldDirty: true,
@@ -46,7 +46,7 @@ const Tiptap = ({ value }: { value: string }) => {
 
   useEffect(() => {
     if (editor && value) {
-      const prev = editor.getText();
+      const prev = editor.getHTML(); //.getText();
       if (prev !== value) {
         editor.commands.setContent(value);
       }

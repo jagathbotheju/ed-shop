@@ -40,8 +40,17 @@ export const getProducts = async () => {
 export const getProductById = async (productId: string) => {
   const product = await db.query.products.findFirst({
     where: eq(products.id, productId),
+    with: {
+      productVariants: {
+        with: {
+          variantImages: true,
+          variantTags: true,
+          products: true,
+        },
+      },
+    },
   });
-  if (product) return product as Product;
+  if (product) return product as ProductExt;
   return null;
 };
 

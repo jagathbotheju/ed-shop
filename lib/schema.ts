@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+export const ReviewSchema = z.object({
+  rating: z
+    .number()
+    .min(1, "please add at least one stare")
+    .max(5, "only 5 stars allowed"),
+  comment: z.string(),
+});
+
 export const VariantSchema = z.object({
   type: z
     .string({ required_error: "type is required" })
