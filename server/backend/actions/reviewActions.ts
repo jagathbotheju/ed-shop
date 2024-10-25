@@ -3,8 +3,18 @@ import { auth } from "@/lib/auth";
 import { ReviewSchema } from "@/lib/schema";
 import { db } from "@/server/db";
 import { reviews } from "@/server/db/schema";
-import { and, eq } from "drizzle-orm";
+import { Review } from "@/server/db/schema/reviews";
+import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
+
+export const getReviewsByProductId = async (productId: string) => {
+  const productReviews = await db.query.reviews.findMany({
+    with: { user: true },
+    where: eq(reviews.productId, productId),
+    orderBy: [desc(reviews.createdAt)],
+  });
+  return productReviews as Review[];
+};
 
 export const addReview = async ({
   reviewData,

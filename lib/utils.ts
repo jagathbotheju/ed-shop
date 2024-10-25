@@ -11,3 +11,7 @@ export const formatCurrency = (amount: number) => {
     currency: "USD",
   }).format(amount);
 };
+
+export const getReviewAverage = (reviews: number[]) => {
+  return reviews.reduce((acc, review) => acc + review) / reviews.length;
+};

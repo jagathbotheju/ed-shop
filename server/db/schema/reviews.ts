@@ -1,6 +1,6 @@
 import { pgTable, text, real, timestamp, index } from "drizzle-orm/pg-core";
-import { user } from "./user";
-import { products } from "./products";
+import { User, user } from "./user";
+import { ProductExt, products } from "./products";
 import { InferSelectModel, relations } from "drizzle-orm";
 
 export const reviews = pgTable(
@@ -40,4 +40,7 @@ export const reviewRelations = relations(reviews, ({ one }) => ({
   }),
 }));
 
-export type Review = InferSelectModel<typeof reviews>;
+export type Review = InferSelectModel<typeof reviews> & {
+  // products:ProductExt,
+  user: User;
+};

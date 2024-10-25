@@ -48,7 +48,7 @@ const ReviewForm = ({ productId }: Props) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div className="w-full">
+        <div className="w-fit flex self-end">
           <Button className="font-medium w-full" variant="secondary">
             Leave a Comment
           </Button>
