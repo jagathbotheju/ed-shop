@@ -18,7 +18,6 @@ interface Props {
 
 const Reviews = ({ productId }: Props) => {
   const { data: productReviews, isLoading } = useReviewsByProductId(productId);
-  console.log("isLoading", isLoading);
 
   if (!productReviews) return <Loader2 />;
 

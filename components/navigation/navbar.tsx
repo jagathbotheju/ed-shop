@@ -3,6 +3,7 @@ import AuthButton from "../auth/auth-button";
 import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
+import CartDrawer from "../cart/CartDrawer";
 
 const Navbar = async () => {
   const session = await auth();
@@ -26,9 +27,14 @@ const Navbar = async () => {
               </h1>
             </Link>
           </li>
-          <li>
-            <AuthButton user={user} />
-          </li>
+          <div className="flex items-center gap-4 md:gap-6">
+            <li className="flex items-center relative hover:bg-muted">
+              <CartDrawer />
+            </li>
+            <li>
+              <AuthButton user={user} />
+            </li>
+          </div>
         </ul>
       </nav>
     </header>

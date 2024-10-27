@@ -32,7 +32,7 @@ const HomeProducts = () => {
   }
 
   return (
-    <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5 justify-center">
       {products.map((product) => (
         <Link href={`/products/${product.id}`} key={product.id}>
           <Card className="hover:shadow-lg hover:scale-105 transition-all duration-300">

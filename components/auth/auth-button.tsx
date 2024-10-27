@@ -53,7 +53,7 @@ const AuthButton = ({ user }: Props) => {
         <>
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger className="focus-visible:outline-none">
-              <Avatar>
+              <Avatar className="w-8 h-8">
                 <AvatarImage src={user.image ?? ""} alt="@shadcn" />
                 <AvatarFallback>
                   <span className="text-amber-400 font-semibold">

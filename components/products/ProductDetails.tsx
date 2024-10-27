@@ -14,6 +14,7 @@ import { nanoid } from "nanoid";
 import { ProductVariantExt } from "@/server/db/schema/productVariants";
 import VariantImageCarousel from "../variants/VariantImageCarousel";
 import Reviews from "../reviews/Reviews";
+import AddToCart from "../cart/AddToCart";
 
 interface Props {
   productId: string;
@@ -37,7 +38,7 @@ const ProductDetails = ({ productId }: Props) => {
     );
   }
 
-  if (_.isEmpty(product) || !product) {
+  if (_.isEmpty(product) || !product ||!variant) {
     return (
       <div className="flex w-full justify-center">
         <h3 className="text-3xl font-semibold text-clip p-10 rounded-md">
@@ -82,6 +83,11 @@ const ProductDetails = ({ productId }: Props) => {
             setVariant={setVariant}
             selectedVariant={variant}
           />
+
+          <AddToCart 
+          product={product}
+          variant={variant}
+        />
         </div>
       </section>
 
